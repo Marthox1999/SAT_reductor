@@ -1,0 +1,11 @@
+This paper continues a work started 2 years ago by the authors: improving and sudying heuristics of CDCL solvers using machine learning.
+
+Authors proposes a new objective, called Global Learning Rate. They show the correlation between GLR and LBD. Even if it seems obvious afterward: with less decisions per conflict, we can expect to have less decisions in general (a lower search tree), and then clauses with shorter LBD.  By the way, GLR is a good metric that can give new insights to researchers and help them to improve their SAT solver.
+
+The paper is well written, the bibliography is complete. All experiments are explained carefully. Furthermore, authors propose a new heuristic, infeasible in practice, but provide a fair explanation and comparison.
+
+Then, they provide an approximation of this heuristic with interesting results.
+
+To conclude, I think this paper can be accepted.
+
+

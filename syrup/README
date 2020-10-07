@@ -1,0 +1,11 @@
+to compile: 
+make 
+This will create an executable in bin directory.
+
+to clean: 
+make clean
+
+to run: 
+./glucose-syrup-24.sh cnffile will run the solver (version 24) with dedicated options. 
+./glucose-syrup-48.sh cnffile will run the solver (version 48) with dedicated options.
+

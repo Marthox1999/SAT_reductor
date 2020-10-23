@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 import subprocess
 import pandas as pd
 
+begin_time = datetime.now()
+
 SOLVER_PATH = join(getcwd(), "syrup")
 
 SOLVER_CMD = "cd " + SOLVER_PATH + " &&" + " ./glucose-syrup-24.sh"
@@ -18,27 +20,55 @@ satexecTimes = []
 xsatexecTimes = []
 
 for i in SAT_PROBLEMS:
-    begin_solving = datetime.now()
+    print("Solving SAT problems")
+    cpu_time = None
+    real_time = None
+    satisfying = None
     problem = join(getcwd(), i)
-    system(SOLVER_CMD.format(problem))
-    end_solving = datetime.now()
-    satexecTimes.append(
-        [i.rsplit("/", 1)[1], (end_solving-begin_solving).total_seconds()])
+    sat_output = subprocess.Popen(SOLVER_CMD.format(
+        problem), shell=True, stdout=subprocess.PIPE)
+    subprocess_return = sat_output.stdout.read().decode("utf-8").split("\n")
 
-df = pd.DataFrame(data=satexecTimes, columns=['File', 'Time'])
+    for j in subprocess_return:
+        if ("SATISFIABLE" in j):
+            satisfying = j.split(" ")[1]
+        if ("cpu time" in j):
+            cpu_time = j.split(" ")[5]
+        if ("real time" in j):
+            real_time = j.split(" ")[4]
+
+    xsatexecTimes.append(
+        [i.rsplit("/", 1)[1], cpu_time, real_time, satisfying])
+
+df = pd.DataFrame(data=xsatexecTimes, columns=[
+    'File', 'cpu time', 'real time', 'Satisfying'])
 df.to_csv('sat_output.csv', index=False)
 
 for i in X_SAT_PROBLEMS:
-    begin_solving = datetime.now()
+    print("Solving X-SAT problems")
+    cpu_time = None
+    real_time = None
+    satisfying = None
     problem = join(getcwd(), i)
-    subprocess = subprocess.Popen(SOLVER_CMD.format(
+    xsat_output = subprocess.Popen(SOLVER_CMD.format(
         problem), shell=True, stdout=subprocess.PIPE)
-    end_solving = datetime.now()
-    subprocess_return = subprocess.stdout.read()
-    if("" in subprocess_return):
-        True
-    xsatexecTimes.append(
-        [i.rsplit("/", 1)[1], (end_solving-begin_solving).total_seconds(), "True"])
+    subprocess_return = xsat_output.stdout.read().decode("utf-8").split("\n")
 
-df = pd.DataFrame(data=xsatexecTimes, columns=['File', 'Time', 'Satisfying'])
+    for j in subprocess_return:
+        if ("SATISFIABLE" in j):
+            satisfying = j.split(" ")[1]
+        if ("cpu time" in j):
+            print(j.split(" ")[5])
+            cpu_time = j.split(" ")[5]
+        if ("real time" in j):
+            real_time = j.split(" ")[4]
+
+    xsatexecTimes.append(
+        [i.rsplit("/", 1)[1], cpu_time, real_time, satisfying])
+
+df = pd.DataFrame(data=xsatexecTimes, columns=[
+                  'File', 'cpu time', 'real time', 'Satisfying'])
 df.to_csv('xsat_output.csv', index=False)
+
+end_time = datetime.now()
+print((end_time-begin_time).total_seconds())

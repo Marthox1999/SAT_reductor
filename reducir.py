@@ -11,8 +11,6 @@ SOLVER_PATH = join(getcwd(), "syrup")
 SOLVER_CMD = "cd " + SOLVER_PATH + " &&" + " ./glucose-syrup-24.sh"
 SOLVER_CMD = " ".join([SOLVER_CMD, "{}"])
 
-print(SOLVER_CMD)
-
 SAT_PROBLEMS = glob('./InstanciasSAT/*.cnf', recursive=True)
 X_SAT_PROBLEMS = glob('./X-SAT/*.cnf', recursive=True)
 

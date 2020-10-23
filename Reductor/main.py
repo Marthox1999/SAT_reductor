@@ -22,15 +22,13 @@ if __name__ == '__main__':
     readed_problems.read_file()
     problem = readed_problems.problems
     SAT_instances = readed_problems.SAT_instances
+    try:
+        X_SAT = int(argv[2])
+    except:
+        raise("Please type a valid x to reduce to")
 
     for index, p in enumerate(problem):
-        print(p)
-        solution = Solver(p, 5)
+        solution = Solver(p, X_SAT)
         solution.reduct_sat()
-        print("Solucion:")
-        for clause in solution.solution:
-            print(clause)
-            if clause is None:
-                break
         readed_problems.export_solution(
             solution.solution, SAT_instances[index].rsplit('/', 1)[-1], solution.var_count)

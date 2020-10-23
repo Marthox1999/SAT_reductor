@@ -3,6 +3,7 @@ from os.path import join, sep
 from glob import glob
 from datetime import datetime, timedelta
 
+import subprocess
 import pandas as pd
 
 SOLVER_PATH = join(getcwd(), "syrup")
@@ -12,9 +13,9 @@ SOLVER_CMD = " ".join([SOLVER_CMD, "{}"])
 
 print(SOLVER_CMD)
 
-SAT_PROBLEMS = glob('./InstanciasSAT/*', recursive=True)
-X_SAT_PROBLEMS = glob('./X-SAT/*', recursive=True)
-print(SAT_PROBLEMS)
+SAT_PROBLEMS = glob('./InstanciasSAT/*.cnf', recursive=True)
+X_SAT_PROBLEMS = glob('./X-SAT/*.cnf', recursive=True)
+
 satexecTimes = []
 xsatexecTimes = []
 
@@ -32,10 +33,14 @@ df.to_csv('sat_output.csv', index=False)
 for i in X_SAT_PROBLEMS:
     begin_solving = datetime.now()
     problem = join(getcwd(), i)
-    system(SOLVER_CMD.format(problem))
+    subprocess = subprocess.Popen(SOLVER_CMD.format(
+        problem), shell=True, stdout=subprocess.PIPE)
     end_solving = datetime.now()
+    subprocess_return = subprocess.stdout.read()
+    if("" in subprocess_return):
+        True
     xsatexecTimes.append(
-        [i.rsplit("/", 1)[1], (end_solving-begin_solving).total_seconds()])
+        [i.rsplit("/", 1)[1], (end_solving-begin_solving).total_seconds(), "True"])
 
-df = pd.DataFrame(data=xsatexecTimes, columns=['File', 'Time'])
+df = pd.DataFrame(data=xsatexecTimes, columns=['File', 'Time', 'Satisfying'])
 df.to_csv('xsat_output.csv', index=False)
